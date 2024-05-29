@@ -1,0 +1,13 @@
+name: "Security Scanning"
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+jobs:
+  scan:
+    name: Security Scan
+    uses: chrisns/.github/.github/workflows/security-scan.yml@main
+    permissions:
+      security-events: write
+      statuses: write
