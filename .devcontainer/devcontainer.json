@@ -1,0 +1,17 @@
+{
+	"name": "Ruby",
+	"image": "mcr.microsoft.com/devcontainers/ruby:3.0",
+	"postCreateCommand": "bundle install && pip install -r requirements.txt",
+	"features": {
+		"ghcr.io/devcontainers/features/python:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"platformio.platformio-ide",
+				"ESPHome.esphome-vscode"
+			]
+		}
+	}
+}
