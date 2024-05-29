@@ -16,8 +16,13 @@ esphome:
   name: childrensclock
   platform: ESP32
   board: esp32dev
+  name_add_mac_suffix: true
   includes:
     - src/childrensclock.h
+  project:
+    name: chrisns.childrens-clock
+    version: 0.0.1
+
 
 ota:
 
