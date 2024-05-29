@@ -18,5 +18,4 @@ jobs:
       - name: Run rake test in dev container
         uses: devcontainers/ci@v0.3
         with:    
-          push: never
           runCmd: rake test
