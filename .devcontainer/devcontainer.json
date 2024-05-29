@@ -10,7 +10,8 @@
 			"extensions": [
 				"ms-vscode.cpptools",
 				"platformio.platformio-ide",
-				"ESPHome.esphome-vscode"
+				"ESPHome.esphome-vscode",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		}
 	}
