@@ -66,12 +66,12 @@ sensor:
       return GetState(
           id(sntp_time).now().day_of_week,
           id(current_time_decimal).state,
-          TimeAsDecimal(id(weekday_go).state),
-          TimeAsDecimal(id(weekday_wake).state),
-          TimeAsDecimal(id(weekday_bedtime).state),
-          TimeAsDecimal(id(weekend_go).state),
-          TimeAsDecimal(id(weekend_wake).state),
-          TimeAsDecimal(id(weekend_bedtime).state),
+          TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
+          TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
+          TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
+          TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
+          TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
+          TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
         );
 
 i2c:
@@ -235,11 +235,11 @@ display:
           color = Color(0, 50, 0);
         }
 
-        int line_length = ProgressToDots(id(progress), 32)
+        int line_length = ProgressToDots(id(progress), 32);
         
         it.line(0, 0, line_length, 0, color);
 
-        auto time_text = id(current_time).state
+        auto time_text = id(current_time).state;
 
         it.print(
           1,
