@@ -1,0 +1,246 @@
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  reboot_timeout: 15min
+  ap:
+    ssid: "Clock Fallback Hotspot"
+captive_portal:
+  
+api:
+  reboot_timeout: 0s
+
+web_server:
+  ota: true
+
+esphome:
+  name: childrensclock
+  platform: ESP32
+  board: esp32dev
+  includes:
+    - src/childrensclock.h
+
+ota:
+
+logger:
+  level: DEBUG
+  baud_rate: 9600
+
+# bluetooth_proxy:
+#   active: true
+
+globals:
+  - id: progress
+    type: int
+    restore_value: no
+    initial_value: '100'
+
+sensor:
+  - name: Progress Percent
+    platform: template
+    id: progress_percent
+    unit_of_measurement: "%"
+    state_class: measurement
+    icon: mdi:percent
+    lambda: |
+      return id(progress) < 0 ? 0 : id(progress);
+  - name: Current time as decimal
+    platform: template
+    id: current_time_decimal
+    state_class: measurement
+    icon: mdi:clock-digital
+    update_interval: 1s
+    lambda: |
+      return TimeAsDecimal(id(sntp_time).now().hour, id(sntp_time).now().minute);
+    
+  - name: Current state
+    platform: template
+    id: current_state
+    state_class: measurement
+    update_interval: 1s
+    lambda: |
+      return GetState(
+          id(sntp_time).now().day_of_week,
+          id(current_time_decimal).state,
+          TimeAsDecimal(id(weekday_go).state),
+          TimeAsDecimal(id(weekday_wake).state),
+          TimeAsDecimal(id(weekday_bedtime).state),
+          TimeAsDecimal(id(weekend_go).state),
+          TimeAsDecimal(id(weekend_wake).state),
+          TimeAsDecimal(id(weekend_bedtime).state),
+        );
+
+i2c:
+  sda: 18
+  scl: 5
+  scan: true
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/London
+    servers:
+     - 0.pool.ntp.org
+     - 1.pool.ntp.org
+     - 2.pool.ntp.org
+    on_time_sync:
+      then:
+        - if:
+            condition:
+              - light.is_off: led_matrix_light
+            then:
+              - light.turn_on: led_matrix_light
+
+    # on_time:
+    #   - seconds: "*"
+    #     then:
+    #       - lambda: |
+    #           float hour, alarm, remaining, total, evening, percent;
+    #           int day_of_week;
+
+    #           evening = (float)id(evening_time).state;
+    #           hour = id(sntp_time).now().hour + (0.0166666666667 * id(sntp_time).now().minute);
+    #           day_of_week = id(sntp_time).now().day_of_week;
+
+    #           // if its sunday-thursday & evening or if its mon-fri
+    #           // sun = 1
+    #           // mon = 2
+    #           // tue = 3
+    #           // wed = 4
+    #           // thu = 5
+    #           // fri = 6
+    #           // sat = 7
+
+    #           if ( (day_of_week <= 5 && hour >= evening) || (day_of_week >= 2 && day_of_week <= 6 )) {
+    #             alarm = id(weekday_alarm).state;
+    #           } else {
+    #             alarm = id(weekend_alarm).state;
+    #           }
+
+    #           total = 24.00 - evening + alarm;
+
+    #           if (hour >= evening) {
+    #             alarm += 24;
+    #           }
+
+    #           remaining = alarm-hour;
+    #           percent = (100/total) * remaining;
+
+    #           ESP_LOGD("remaining", "hour: %f total: %f alarm:%f remain: %f perecent: %f, evening: %f", hour, total, alarm, remaining, percent, evening);
+              
+    #           id(progress) = percent;
+
+font:
+  - id: tinyfont
+    file: "lexis.ttf"
+    size: 8
+    glyphs: \'!"%()+,-_.:*=°?~# 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+datetime:
+  - platform: template
+    id: weekday_go
+    type: time
+    name: Weekday go
+    optimistic: yes
+    initial_value: "08:00"
+    restore_value: true
+
+  - platform: template
+    id: weekday_wake
+    type: time
+    name: Weekday wake up
+    optimistic: yes
+    initial_value: "07:00"
+    restore_value: true
+
+  - platform: template
+    id: weekday_bedtime
+    type: time
+    name: Weekday bedtime
+    optimistic: yes
+    initial_value: "18:00"
+    restore_value: true
+
+  - platform: template
+    id: weekend_go
+    type: time
+    name: Weekend go
+    optimistic: yes
+    initial_value: "08:00"
+    restore_value: true
+
+  - platform: template
+    id: weekend_wake
+    type: time
+    name: Weekend wake up
+    optimistic: yes
+    initial_value: "07:00"
+    restore_value: true
+
+  - platform: template
+    id: weekend_bedtime
+    type: time
+    name: Weekend bedtime
+    optimistic: yes
+    initial_value: "18:00"
+    restore_value: true
+
+text_sensor:
+  - platform: template
+    name: Current time
+    id: current_time
+    disabled_by_default: true
+    lambda: |-
+      return id(sntp_time).now().strftime("%I:%M");
+    update_interval: 1s
+
+light:
+  - platform: neopixelbus
+    internal: true
+    type: GRB
+    variant: WS2812
+    pin: GPIO13
+    num_leds: 256
+    name: "Clock Led Matrix"
+    id: led_matrix_light
+    default_transition_length: 0s
+    restore_mode: ALWAYS_ON
+    icon: mdi:clock-digital
+
+display:
+  - platform: addressable_light
+    id: led_matrix_display
+    addressable_light_id: led_matrix_light
+    width: 32
+    height: 8
+    rotation: 0°
+    pixel_mapper: |-
+      if (x % 2 == 0) {
+        return (x * 8) + y;
+      }
+      return (x * 8) + (7 - y);
+    lambda: |-
+        auto color = Color(0, 0, 0);
+
+
+        
+
+        if (id(progress) > 0.0 ) {
+          color = Color(28, 0, 0);
+        } else {
+          color = Color(0, 50, 0);
+        }
+
+        int line_length = ProgressToDots(id(progress), 32)
+        
+        it.line(0, 0, line_length, 0, color);
+
+        auto time_text = id(current_time).state
+
+        it.print(
+          1,
+          1, 
+          id(tinyfont),
+          color, 
+          TextAlign::TOP_LEFT,
+          time_text.c_str()
+        );
