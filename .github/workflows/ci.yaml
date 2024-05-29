@@ -19,3 +19,6 @@ jobs:
       - uses: devcontainers/ci@v0.3
         with:    
           runCmd: rake test
+      # - uses: devcontainers/ci@v0.3
+      #   with:    
+      #     runCmd: rake build
