@@ -27,11 +27,11 @@ esphome:
 ota:
 
 logger:
-  level: DEBUG
-  baud_rate: 9600
+  level: INFO
+  baud_rate: 460800
 
-# bluetooth_proxy:
-#   active: true
+bluetooth_proxy:
+  active: true
 
 globals:
   - id: progress
@@ -46,9 +46,30 @@ sensor:
     unit_of_measurement: "%"
     state_class: measurement
     icon: mdi:percent
+    update_interval: 1s
     lambda: |
-      return id(progress) < 0 ? 0 : id(progress);
+      float now = TimeAsDecimal(id(sntp_time).now().hour, id(sntp_time).now().minute);
+      int day_of_week = id(sntp_time).now().day_of_week;
+      float percent;
+      int currentstate = id(current_state).state;
+      // TODO: improve logic so progress is calculated right on friday and sunday nights
+
+      if (day_of_week == SAT || day_of_week == SUN) {
+        if (currentstate == AMBER) {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute));
+        } else {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute));
+        }
+      } else {
+        if (currentstate == AMBER) {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute), TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute));
+        } else {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute), TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute));
+        }
+      }
+      return percent;
   - name: Current time as decimal
+    disabled_by_default: true
     platform: template
     id: current_time_decimal
     state_class: measurement
@@ -56,8 +77,18 @@ sensor:
     update_interval: 1s
     lambda: |
       return TimeAsDecimal(id(sntp_time).now().hour, id(sntp_time).now().minute);
-    
+
+  - name: Dots
+    disabled_by_default: true
+    platform: template
+    id: dots
+    state_class: measurement
+    update_interval: 1s
+    lambda: |
+      return ProgressToDots(id(progress_percent).state, 32);
+
   - name: Current state
+    disabled_by_default: true
     platform: template
     id: current_state
     state_class: measurement
@@ -94,45 +125,6 @@ time:
               - light.is_off: led_matrix_light
             then:
               - light.turn_on: led_matrix_light
-
-    # on_time:
-    #   - seconds: "*"
-    #     then:
-    #       - lambda: |
-    #           float hour, alarm, remaining, total, evening, percent;
-    #           int day_of_week;
-
-    #           evening = (float)id(evening_time).state;
-    #           hour = id(sntp_time).now().hour + (0.0166666666667 * id(sntp_time).now().minute);
-    #           day_of_week = id(sntp_time).now().day_of_week;
-
-    #           // if its sunday-thursday & evening or if its mon-fri
-    #           // sun = 1
-    #           // mon = 2
-    #           // tue = 3
-    #           // wed = 4
-    #           // thu = 5
-    #           // fri = 6
-    #           // sat = 7
-
-    #           if ( (day_of_week <= 5 && hour >= evening) || (day_of_week >= 2 && day_of_week <= 6 )) {
-    #             alarm = id(weekday_alarm).state;
-    #           } else {
-    #             alarm = id(weekend_alarm).state;
-    #           }
-
-    #           total = 24.00 - evening + alarm;
-
-    #           if (hour >= evening) {
-    #             alarm += 24;
-    #           }
-
-    #           remaining = alarm-hour;
-    #           percent = (100/total) * remaining;
-
-    #           ESP_LOGD("remaining", "hour: %f total: %f alarm:%f remain: %f perecent: %f, evening: %f", hour, total, alarm, remaining, percent, evening);
-              
-    #           id(progress) = percent;
 
 font:
   - id: tinyfont
@@ -226,16 +218,21 @@ display:
     lambda: |-
         auto color = Color(0, 0, 0);
 
+        int currentstate = id(current_state).state;
 
-        
-
-        if (id(progress) > 0.0 ) {
-          color = Color(28, 0, 0);
-        } else {
-          color = Color(0, 50, 0);
+        switch (currentstate) {
+          case RED:
+            color = Color(28, 0, 0);
+            break;
+          case AMBER:
+            // code block
+            break;
+          case GREEN:
+            color = Color(0, 50, 0);
+            break;
         }
 
-        int line_length = ProgressToDots(id(progress), 32);
+        int line_length = id(dots).state;
         
         it.line(0, 0, line_length, 0, color);
 
