@@ -30,9 +30,6 @@ logger:
   level: INFO
   baud_rate: 460800
 
-bluetooth_proxy:
-  active: true
-
 globals:
   - id: progress
     type: int
