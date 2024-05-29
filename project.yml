@@ -59,4 +59,12 @@
     - stdout_pretty_tests_report
     - module_generator
     - gcov
+:gcov:
+  :reports:
+    - Text
+    - lcov
+    - HtmlDetailed
+    - Cobertura
+    - JSON
+
 ...
