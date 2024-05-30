@@ -2,8 +2,13 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   reboot_timeout: 0s
+  fast_connect: true
   ap:
     ssid: "Clock Fallback Hotspot"
+
+esp32_improv:
+  authorizer: false
+
 captive_portal:
   
 api:
@@ -50,7 +55,7 @@ ota:
 
 logger:
   level: DEBUG
-  baud_rate: 9600
+  baud_rate: 460800
 
 sensor:
   - name: Progress Percent
@@ -60,9 +65,9 @@ sensor:
     unit_of_measurement: "%"
     state_class: measurement
     icon: mdi:percent
-    update_interval: 1s
+    update_interval: 5s
     lambda: |
-      float now = TimeAsDecimal(id(sntp_time).now().hour, id(sntp_time).now().minute);
+      float now = id(current_time_decimal).state;
       int day_of_week = id(sntp_time).now().day_of_week;
       float percent;
       int currentstate = id(current_state).state;
@@ -90,7 +95,7 @@ sensor:
     id: current_time_decimal
     state_class: measurement
     icon: mdi:clock-digital
-    update_interval: 1s
+    update_interval: 5s
     lambda: |
       return TimeAsDecimal(id(sntp_time).now().hour, id(sntp_time).now().minute);
 
@@ -100,7 +105,7 @@ sensor:
     id: dots
     internal: true
     state_class: measurement
-    update_interval: 1s
+    update_interval: 5s
     lambda: |
       return ProgressToDots(id(progress_percent).state, 32);
 
@@ -110,7 +115,7 @@ sensor:
     internal: true
     id: current_state
     state_class: measurement
-    update_interval: 1s
+    update_interval: 5s
     lambda: |
       return GetState(
         id(sntp_time).now().day_of_week,
@@ -138,13 +143,21 @@ time:
               - light.is_off: led_matrix_light
             then:
               - light.turn_on: led_matrix_light
+        - lambda: |
+            auto current = id(sntp_time).get_timezone().c_str();
+            auto desired = id(tz).state.c_str();
+            if (id(sntp_time).now().is_valid() && strcmp(current,desired) != 0) {
+              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current, desired);
+              id(sntp_time).set_timezone(desired);
+              id(sntp_time).call_setup();
+            }
     on_time:
       - seconds: 5
         then:
           lambda: |
             auto current = id(sntp_time).get_timezone().c_str();
             auto desired = id(tz).state.c_str();
-            if (id(sntp_time).now().is_valid() && current != desired) {
+            if (id(sntp_time).now().is_valid() && strcmp(current,desired) != 0) {
               ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current, desired);
               id(sntp_time).set_timezone(desired);
               id(sntp_time).call_setup();
@@ -219,7 +232,7 @@ text_sensor:
     disabled_by_default: true
     lambda: |-
       return id(sntp_time).now().is_valid() ? id(sntp_time).now().strftime("%I:%M") : "";
-    update_interval: 1s
+    update_interval: 5s
 
 text:
   - platform: template
@@ -274,10 +287,10 @@ display:
         }
 
         int line_length = id(dots).state;
+        auto time_text = id(current_time).state;
         
         it.line(0, 0, line_length, 0, color);
 
-        auto time_text = id(current_time).state;
 
         it.print(
           1,

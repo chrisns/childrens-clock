@@ -42,7 +42,7 @@ int ProgressToDots(float progressPercent, int totalDots) {
   // Calculate the number of unlit dots using ceil for rounding up any fractional part
   int unlitDots = (int) ceil((progressPercent / 100.0) * totalDots);
   // Calculate the number of lit dots by subtracting unlit dots from total
-  return totalDots - unlitDots;
+  return unlitDots < totalDots ? totalDots - unlitDots : 0;
 }
 
 bool IsWeekday(int dayOfWeek) {
