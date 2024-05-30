@@ -1,7 +1,7 @@
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  reboot_timeout: 15min
+  reboot_timeout: 0s
   ap:
     ssid: "Clock Fallback Hotspot"
 captive_portal:
@@ -11,6 +11,8 @@ api:
 
 web_server:
   ota: true
+  log: off
+  version: 2
 
 esphome:
   name: childrensclock
@@ -22,24 +24,39 @@ esphome:
   project:
     name: chrisns.childrens-clock
     version: 0.0.1
+  on_boot:
+    priority: 700
+    then:
+      - light.turn_off: led_matrix_light
+  on_shutdown:
+    priority: 700
+    then:
+      - light.turn_off: led_matrix_light
 
+color:
+  - id: RED_COLOR
+    red_int: 28
+  - id: GREEN_COLOR
+    green_int: 50
+  - id: AMBER_COLOR
+    red_int: 50
+    green_int: 28
 
 ota:
+  safe_mode: false
+  on_begin:
+    then:
+      - light.turn_off: led_matrix_light
 
 logger:
-  level: INFO
-  baud_rate: 460800
-
-globals:
-  - id: progress
-    type: int
-    restore_value: no
-    initial_value: '100'
+  level: DEBUG
+  baud_rate: 9600
 
 sensor:
   - name: Progress Percent
     platform: template
     id: progress_percent
+    internal: true
     unit_of_measurement: "%"
     state_class: measurement
     icon: mdi:percent
@@ -65,9 +82,11 @@ sensor:
         }
       }
       return percent;
+
   - name: Current time as decimal
     disabled_by_default: true
     platform: template
+    internal: true
     id: current_time_decimal
     state_class: measurement
     icon: mdi:clock-digital
@@ -79,6 +98,7 @@ sensor:
     disabled_by_default: true
     platform: template
     id: dots
+    internal: true
     state_class: measurement
     update_interval: 1s
     lambda: |
@@ -87,30 +107,26 @@ sensor:
   - name: Current state
     disabled_by_default: true
     platform: template
+    internal: true
     id: current_state
     state_class: measurement
     update_interval: 1s
     lambda: |
       return GetState(
-          id(sntp_time).now().day_of_week,
-          id(current_time_decimal).state,
-          TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
-          TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
-          TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
-          TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
-          TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
-          TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
-        );
-
-i2c:
-  sda: 18
-  scl: 5
-  scan: true
+        id(sntp_time).now().day_of_week,
+        id(current_time_decimal).state,
+        TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
+        TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
+        TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
+        TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
+        TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
+        TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
+      );
 
 time:
   - platform: sntp
     id: sntp_time
-    timezone: Europe/London
+    timezone: GMT0
     servers:
      - 0.pool.ntp.org
      - 1.pool.ntp.org
@@ -122,12 +138,23 @@ time:
               - light.is_off: led_matrix_light
             then:
               - light.turn_on: led_matrix_light
+    on_time:
+      - seconds: 5
+        then:
+          lambda: |
+            auto current = id(sntp_time).get_timezone().c_str();
+            auto desired = id(tz).state.c_str();
+            if (id(sntp_time).now().is_valid() && current != desired) {
+              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current, desired);
+              id(sntp_time).set_timezone(desired);
+              id(sntp_time).call_setup();
+            }
 
 font:
   - id: tinyfont
     file: "lexis.ttf"
     size: 8
-    glyphs: \'!"%()+,-_.:*=°?~# 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    glyphs: :0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 datetime:
   - platform: template
@@ -137,6 +164,8 @@ datetime:
     optimistic: yes
     initial_value: "08:00"
     restore_value: true
+    # web_server_sorting_weight: 3
+
 
   - platform: template
     id: weekday_wake
@@ -145,6 +174,7 @@ datetime:
     optimistic: yes
     initial_value: "07:00"
     restore_value: true
+    # web_server_sorting_weight: 2
 
   - platform: template
     id: weekday_bedtime
@@ -153,6 +183,7 @@ datetime:
     optimistic: yes
     initial_value: "18:00"
     restore_value: true
+    # web_server_sorting_weight: 1
 
   - platform: template
     id: weekend_go
@@ -161,6 +192,7 @@ datetime:
     optimistic: yes
     initial_value: "08:00"
     restore_value: true
+    # web_server_sorting_weight: 6
 
   - platform: template
     id: weekend_wake
@@ -169,6 +201,7 @@ datetime:
     optimistic: yes
     initial_value: "07:00"
     restore_value: true
+    # web_server_sorting_weight: 5
 
   - platform: template
     id: weekend_bedtime
@@ -177,6 +210,7 @@ datetime:
     optimistic: yes
     initial_value: "18:00"
     restore_value: true
+    # web_server_sorting_weight: 4
 
 text_sensor:
   - platform: template
@@ -184,8 +218,17 @@ text_sensor:
     id: current_time
     disabled_by_default: true
     lambda: |-
-      return id(sntp_time).now().strftime("%I:%M");
+      return id(sntp_time).now().is_valid() ? id(sntp_time).now().strftime("%I:%M") : "";
     update_interval: 1s
+
+text:
+  - platform: template
+    name: Timezone from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+    id: tz
+    mode: text
+    optimistic: yes
+    initial_value: "GMT0"
+    restore_value: true
 
 light:
   - platform: neopixelbus
@@ -197,8 +240,9 @@ light:
     name: "Clock Led Matrix"
     id: led_matrix_light
     default_transition_length: 0s
-    restore_mode: ALWAYS_ON
     icon: mdi:clock-digital
+    restore_mode: ALWAYS_OFF
+
 
 display:
   - platform: addressable_light
@@ -219,13 +263,13 @@ display:
 
         switch (currentstate) {
           case RED:
-            color = Color(28, 0, 0);
+            color = id(RED_COLOR);
             break;
           case AMBER:
-            // code block
+            color = id(AMBER_COLOR);
             break;
           case GREEN:
-            color = Color(0, 50, 0);
+            color = id(GREEN_COLOR);
             break;
         }
 
