@@ -5,7 +5,9 @@ wifi:
 
 esp32_improv:
   authorizer: false
+
 improv_serial:
+  next_url: http://{{ip_address}}
 
 captive_portal:
   
