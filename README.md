@@ -1,4 +1,9 @@
 # Children's IoT Clock
+[![CI](https://github.com/chrisns/childrens-clock/actions/workflows/ci.yaml/badge.svg)](https://github.com/chrisns/childrens-clock/actions/workflows/ci.yaml)
+[![Security Scanning](https://github.com/chrisns/childrens-clock/actions/workflows/security.yml/badge.svg)](https://github.com/chrisns/childrens-clock/actions/workflows/security.yml)
+![GitHub License](https://img.shields.io/github/license/chrisns/childrens-clock)
+![GitHub language count](https://img.shields.io/github/languages/count/chrisns/childrens-clock)
+![GitHub top language](https://img.shields.io/github/languages/top/chrisns/childrens-clock)
 
 ![AI generated comic style scene of a child in bed, reading, then getting up to fight crime](./docs/images/comic.png)
 
@@ -54,8 +59,11 @@ You should end up with something (more tidy than this pic)
 
 You'll now need to flash the board
 1. Connect the ESP32 board to your computer
-1. Go to TODO: LINK
-1. Follow the buttons to connect to the serial device, and away you go!
+1. Download the [latest firmware image](https://github.com/chrisns/childrens-clock/releases/latest/download/firmware-factory.bin)
+1. Go to [web.esphome.io](https://web.esphome.io/)
+1. Click connect, and select the serial port for your device
+1. Click install
+1. Follow the buttons to connect to the wifi, and away you go!
 
 #### Configure
 
@@ -96,6 +104,11 @@ This should already work with [Home Assistant](https://www.home-assistant.io/), 
 The code is open source! so feel free to extend this, do fun things, add temp sensors, air quality, buzzers, speakers, motors, the possibilities are endless, **PLEASE SHARE** what you do, take photos, share the code, make a pull request, or just raise an 'issue' with your pics and I'll point at them.
 
 THANKS!
+
+
+#### Other
+
+If you flash the device and it fails to connect to your wifi for whatever reason, it'll run its own access point that you can connect to. It also provides a bluetooth provisioner that you can use. Just go to https://www.improv-wifi.com/
 
 ---
 
