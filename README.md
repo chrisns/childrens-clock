@@ -22,7 +22,7 @@ This was a thing I made my kids after buying and becoming 🤯 frustrated with m
   - Couldn't be made to do all sorts of other things I could think up with a [tiny computer](https://en.wikipedia.org/wiki/ESP32) that is around 15,000 times more powerful than [what is required to land on the moon!](https://en.wikipedia.org/wiki/Apollo_Guidance_Computer)
 
 ## When (History)
-So I made a thing! _confession: this isn't the first generation, previous code is [open](https://github.com/chrisns/my-esphome-devices/blob/d97260ce4b8e330513456011d3693e02f36b1b73/noahclock.yaml) though without documentation_
+So I made a thing! 😱😱😱  _confession: 🤫 this isn't the first generation, previous code is [open](https://github.com/chrisns/my-esphome-devices/blob/d97260ce4b8e330513456011d3693e02f36b1b73/noahclock.yaml) though without documentation_
 
 
 ## What
