@@ -30,9 +30,8 @@ jobs:
         with:    
           runCmd: rake build
           automatic_release_tag: v${{ needs.semver.outputs.semantic_version}}
-          env:
-            VERSION: ${{ needs.semver.outputs.semantic_version}}
-
+          env: |
+            VERSION=${{ needs.semver.outputs.semantic_version}}
       - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: firmware-factory.bin
