@@ -74,9 +74,9 @@ You'll now need to flash the board
 | Weekend wake up | <span style="color:orange">Amber</span> | The time its ok for your kid to get up and quietly read on a weekend (sat+sun) |
 | Weekend bedtime | <span style="color:red">Red</span>      | The time your kid should go to bed on a weekend (sat+sun)                      |
 | Weekend go      | <span style="color:green">Green</span>  | The time its ok for your kid to come jump on your bed on a weekend (sat+sun)   |
-| Weekend wake up | <span style="color:orange">Amber</span> | The time its ok for your kid to get up and quietly read on a weekday (mon-fri) |
-| Weekend bedtime | <span style="color:red">Red</span>      | The time your kid should go to bed on a weekday (mon-fri)                      |
-| Weekend go      | <span style="color:green">Green</span>  | The time its ok for your kid to come jump on your bed on a weekday (mon-fri)   |
+| Weekday wake up | <span style="color:orange">Amber</span> | The time its ok for your kid to get up and quietly read on a weekday (mon-fri) |
+| Weekday bedtime | <span style="color:red">Red</span>      | The time your kid should go to bed on a weekday (mon-fri)                      |
+| Weekday go      | <span style="color:green">Green</span>  | The time its ok for your kid to come jump on your bed on a weekday (mon-fri)   |
 
 #### Mount
 
