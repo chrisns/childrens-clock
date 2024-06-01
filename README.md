@@ -1,4 +1,5 @@
 # Children's IoT Clock
+
 [![CI](https://github.com/chrisns/childrens-clock/actions/workflows/ci.yaml/badge.svg)](https://github.com/chrisns/childrens-clock/actions/workflows/ci.yaml)
 [![Security Scanning](https://github.com/chrisns/childrens-clock/actions/workflows/security.yml/badge.svg)](https://github.com/chrisns/childrens-clock/actions/workflows/security.yml)
 ![GitHub License](https://img.shields.io/github/license/chrisns/childrens-clock)
@@ -10,20 +11,21 @@
 ## Why
 
 This was a thing I made my kids after buying and becoming 🤯 frustrated with many different [commercial offerings](https://www.google.com/search?q=childrens+coloured+clock+wake+up&udm=3)/[[duckduckgo]](https://duckduckgo.com/?q=childrens+clock+wake+up&iar=shopping) that:
-  - Lost track of time if unplugged
-  - Manually updating time was hard and fiddly
-  - Didn't update the time for daylight savings
-  - Updating the config or time required it being in 'awake' mode, lighting up a dark room
-  - Couldn't be easily adjusted for weekends or ad-hoc for holidays/late nights
-  - If the Child could read, and/or count the stars, they would often need get out of bed to get near enough to the clock to determine more than just the color of the light; potentially putting on glasses if needed.
-  - Didn't provide a "its ok to be awake, and play/read quietly, but stay in your room"
-  - It would age quickly and not look grown up
-  - It wouldn't collect data - future plans to put temp sensors, bluetooth relay, and sensors (**not a camera**!)
-  - Couldn't be made to do all sorts of other things I could think up with a [tiny computer](https://en.wikipedia.org/wiki/ESP32) that is around 15,000 times more powerful than [what is required to land on the moon!](https://en.wikipedia.org/wiki/Apollo_Guidance_Computer)
+
+- Lost track of time if unplugged
+- Manually updating time was hard and fiddly
+- Didn't update the time for daylight savings
+- Updating the config or time required it being in 'awake' mode, lighting up a dark room
+- Couldn't be easily adjusted for weekends or ad-hoc for holidays/late nights
+- If the Child could read, and/or count the stars, they would often need get out of bed to get near enough to the clock to determine more than just the color of the light; potentially putting on glasses if needed.
+- Didn't provide a "its ok to be awake, and play/read quietly, but stay in your room"
+- It would age quickly and not look grown up
+- It wouldn't collect data - future plans to put temp sensors, bluetooth relay, and sensors (**not a camera**!)
+- Couldn't be made to do all sorts of other things I could think up with a [tiny computer](https://en.wikipedia.org/wiki/ESP32) that is around 15,000 times more powerful than [what is required to land on the moon!](https://en.wikipedia.org/wiki/Apollo_Guidance_Computer)
 
 ## When (History)
-So I made a thing! 😱😱😱  _confession: 🤫 this isn't the first generation, previous code is [open](https://github.com/chrisns/my-esphome-devices/blob/d97260ce4b8e330513456011d3693e02f36b1b73/noahclock.yaml) though without documentation_
 
+So I made a thing! 😱😱😱  _confession: 🤫 this isn't the first generation, previous code is [open](https://github.com/chrisns/my-esphome-devices/blob/d97260ce4b8e330513456011d3693e02f36b1b73/noahclock.yaml) though without documentation_
 
 ## What
 
@@ -31,22 +33,24 @@ So I made a thing! 😱😱😱  _confession: 🤫 this isn't the first generati
 
 This is made for [Made for ESPHome](https://esphome.io/) so you should be able to go buy a cheap led matrix, esp32, solder 3 pins, flash the chip and you've got something that even works with [Home Assistant](https://www.home-assistant.io/)!
 
-
 ## How to
 
 You will need to buy:
-  - 1x [ESP32](https://www.aliexpress.com/item/1005006692499859.html) £1.91 _(worth buying a few in case you mess up the soldering)_
-  - 1x [WS2812B 8x32 LED Matrix](https://www.aliexpress.com/item/1005002399031444.html) £2.59
-  - 1x [15x5" Photo frame](https://www.amazon.co.uk/dp/B0BBPJPFC9)
+
+- 1x [ESP32](https://www.aliexpress.com/item/1005006692499859.html) £1.91 _(worth buying a few in case you mess up the soldering)_
+- 1x [WS2812B 8x32 LED Matrix](https://www.aliexpress.com/item/1005002399031444.html) £2.59
+- 1x [15x5" Photo frame](https://www.amazon.co.uk/dp/B0BBPJPFC9)
 
 You will need:
-  - A soldering iron
-  - Some solder
-  - A usb cable
+
+- A soldering iron
+- Some solder
+- A usb cable
 
 ### Build
 
 #### Solder
+
   1. `RED` 5v wire on the matrix > the `5v` pin on the esp32
   1. `WHITE` gnd wire on the matrix > a `gnd` pin on the esp32
   1. `GREEN` din wire on the matrix > `13` pin on the esp32
@@ -58,6 +62,7 @@ You should end up with something (more tidy than this pic)
 #### Flash
 
 You'll now need to flash the board
+
 1. Connect the ESP32 board to your computer
 1. Download the [latest firmware image](https://github.com/chrisns/childrens-clock/releases/latest/download/firmware-factory.bin)
 1. Go to [web.esphome.io](https://web.esphome.io/)
@@ -72,7 +77,7 @@ You'll now need to flash the board
 ![screenshot of configuration page](./docs/images/config-screenshot.jpg)
 
 | Config          | Color                                   | Description                                                                    |
-| --------------- | --------------------------------------- | -------------------------------------------------------------------------------|
+| --------------- | --------------------------------------- | ------------------------------------------------------------------------------ |
 | Weekend wake up | <span style="color:orange">Amber</span> | The time its ok for your kid to get up and quietly read on a weekend (sat+sun) |
 | Weekend bedtime | <span style="color:red">Red</span>      | The time your kid should go to bed on a weekend (sat+sun)                      |
 | Weekend go      | <span style="color:green">Green</span>  | The time its ok for your kid to come jump on your bed on a weekend (sat+sun)   |
@@ -100,10 +105,9 @@ Theres some dots on the top of the matrix, these reduce over time until its the 
 
 After configuration, it should just continue to work, it'll continue to get its time from the internet, automatically adjust for daylight savings (if that applies to you).
 
-
 #### Extend
-The code is open source! so feel free to extend this, do fun things, add temp sensors, air quality, buzzers, speakers, motors, the possibilities are endless, **PLEASE SHARE** what you do, take photos, share the code, make a pull request, or just raise an 'issue' with your pics and I'll point at them.
 
+The code is open source! so feel free to extend this, do fun things, add temp sensors, air quality, buzzers, speakers, motors, the possibilities are endless, **PLEASE SHARE** what you do, take photos, share the code, make a pull request, or just raise an 'issue' with your pics and I'll point at them.
 
 This should already work with [Home Assistant](https://www.home-assistant.io/), if you've got Home Assistant installed it should find the device on your network and offer to connect to it, if not you can give it the address of the device.
 
@@ -112,10 +116,9 @@ This should already work with [Home Assistant](https://www.home-assistant.io/), 
 
 THANKS!
 
-
 #### Other
 
-If you flash the device and it fails to connect to your wifi for whatever reason, it'll run its own access point that you can connect to. It also provides a bluetooth provisioner that you can use. Just go to https://www.improv-wifi.com/
+If you flash the device and it fails to connect to your wifi for whatever reason, it'll run its own access point that you can connect to. It also provides a bluetooth provisioner that you can use. Just go to <https://www.improv-wifi.com/>
 
 ---
 
@@ -150,6 +153,7 @@ guard
 ```
 
 ### Build
+
 ```bash
 rake build
 ```
