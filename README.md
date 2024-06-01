@@ -69,6 +69,8 @@ You'll now need to flash the board
 
 > When configuring the timezone, you'll need to refer to the [`POSIX` timezone config](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) just copy paste from this page into the config page of the device and you're good.
 
+![screenshot of configuration page](./docs/images/config-screenshot.jpg)
+
 | Config          | Color                                   | Description                                                                    |
 | --------------- | --------------------------------------- | -------------------------------------------------------------------------------|
 | Weekend wake up | <span style="color:orange">Amber</span> | The time its ok for your kid to get up and quietly read on a weekend (sat+sun) |
@@ -92,16 +94,21 @@ It's a photo frame, so putting it on the wall should be easy
 
 Theres some dots on the top of the matrix, these reduce over time until its the next phase, so provide a visual countdown, if your kid wakes up in the night _"how many dots are left?"_ is a simple way for them to figure out how long is left, and for you to ask why they're jumping on you in the dark without opening your eyes and send them back to bed, because they should know better.
 
+![image of clock in different states](./docs/images/orange-red.png)
+
 #### Forget it
 
 After configuration, it should just continue to work, it'll continue to get its time from the internet, automatically adjust for daylight savings (if that applies to you).
 
 
 #### Extend
+The code is open source! so feel free to extend this, do fun things, add temp sensors, air quality, buzzers, speakers, motors, the possibilities are endless, **PLEASE SHARE** what you do, take photos, share the code, make a pull request, or just raise an 'issue' with your pics and I'll point at them.
+
 
 This should already work with [Home Assistant](https://www.home-assistant.io/), if you've got Home Assistant installed it should find the device on your network and offer to connect to it, if not you can give it the address of the device.
 
-The code is open source! so feel free to extend this, do fun things, add temp sensors, air quality, buzzers, speakers, motors, the possibilities are endless, **PLEASE SHARE** what you do, take photos, share the code, make a pull request, or just raise an 'issue' with your pics and I'll point at them.
+![home assistant discovered device](./docs/images/home-assistant-discovered.jpg)
+![home assistant configuration page for device](./docs/images/home-assistant-config.jpg)
 
 THANKS!
 
