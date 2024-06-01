@@ -14,6 +14,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs:
+      - semver
     steps:
       - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4
       - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
@@ -25,8 +27,12 @@ jobs:
         with:    
           runCmd: rake test
       - uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3
+        env:
+          VERSION: ${{ needs.semver.outputs.semantic_version}}
         with:    
           runCmd: rake build
+          automatic_release_tag: v${{ needs.semver.outputs.semantic_version}}
+
       - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: firmware-factory.bin

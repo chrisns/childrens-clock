@@ -28,7 +28,7 @@ esphome:
     - src/childrensclock.h
   project:
     name: chrisns.childrens-clock
-    version: 0.0.1
+    version: $VERSION
   on_boot:
     priority: 700
     then:
