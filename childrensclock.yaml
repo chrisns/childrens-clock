@@ -61,6 +61,16 @@ logger:
   level: DEBUG
   baud_rate: 460800
 
+button:
+  - platform: factory_reset
+    disabled_by_default: true
+    name: Restart with Factory Default Settings
+  - platform: restart
+    name: Restart
+  - platform: safe_mode
+    disabled_by_default: true
+    name: Safe Mode Reboot
+
 sensor:
   - name: Progress Percent
     platform: template
