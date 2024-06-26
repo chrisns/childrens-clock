@@ -52,10 +52,10 @@ color:
     green_int: 28
 
 ota:
-  safe_mode: false
-  on_begin:
-    then:
-      - light.turn_off: led_matrix_light
+  - platform: esphome
+    on_begin:
+      then:
+        - light.turn_off: led_matrix_light
 
 logger:
   level: DEBUG
