@@ -34,7 +34,7 @@ jobs:
       - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: firmware-factory.bin
-          path: .esphome/build/childrensclock/.pioenvs/childrensclock/firmware-factory.bin
+          path: .esphome/build/childrensclock/.pioenvs/childrensclock/firmware.factory.bin
 
   semver:
     name: Generate a semantic version number
