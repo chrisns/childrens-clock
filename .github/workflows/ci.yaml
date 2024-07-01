@@ -91,6 +91,6 @@ jobs:
         with:
           name: firmware-factory.bin
       - name: Attest
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1
         with:
           subject-path: "${{ github.workspace }}/firmware-factory.bin"
