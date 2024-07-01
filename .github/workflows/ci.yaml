@@ -24,10 +24,10 @@ jobs:
             .esphome
           key: ${{ runner.os }}-${{ hashFiles('src/*') }}-${{ hashFiles('childrensclock.yaml') }}
       - uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3
-        with:    
+        with:
           runCmd: rake test
       - uses: devcontainers/ci@a56d055efecd725e8cfe370543b6071b79989cc8 # v0.3
-        with:    
+        with:
           runCmd: rake build
           env: |
             VERSION=${{ needs.semver.outputs.semantic_version}}
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
-          fetch-depth: '0'
+          fetch-depth: "0"
       - id: semver
         uses: lukaszraczylo/semver-generator@3d75e166af2a7ca239f5b13106f861484be112fa # 1.10.183
         with:
@@ -64,7 +64,6 @@ jobs:
       id-token: write
 
     steps:
-
       - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
         with:
           name: firmware-factory.bin
@@ -75,3 +74,23 @@ jobs:
           prerelease: false
           title: v${{ needs.semver.outputs.semantic_version}}
           files: "firmware-factory.bin"
+
+  attest-binaries:
+    name: Attest binaries
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs:
+      - build
+
+    permissions:
+      id-token: write
+      attestations: write
+
+    steps:
+      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          name: firmware-factory.bin
+      - name: Attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "${{ github.workspace }}/firmware-factory.bin"
