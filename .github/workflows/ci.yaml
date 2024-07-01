@@ -74,23 +74,3 @@ jobs:
           prerelease: false
           title: v${{ needs.semver.outputs.semantic_version}}
           files: "firmware-factory.bin"
-
-  attest-binaries:
-    name: Attest binaries
-    if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    needs:
-      - build
-
-    permissions:
-      id-token: write
-      attestations: write
-
-    steps:
-      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
-        with:
-          name: firmware-factory.bin
-      - name: Attest
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1
-        with:
-          subject-path: "${{ github.workspace }}/firmware-factory.bin"
