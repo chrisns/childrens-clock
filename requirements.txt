@@ -1,3 +1,3 @@
-esphome==2024.6.6
+esphome==2024.7.0
 pillow==10.2.0
 gcovr==7.2
