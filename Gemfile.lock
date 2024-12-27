@@ -9,10 +9,9 @@ GEM
     coderay (1.1.3)
     constructor (2.0.0)
     deep_merge (1.2.2)
-    ffi (1.17.0-aarch64-linux-gnu)
-    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0)
     formatador (1.1.0)
-    guard (2.18.1)
+    guard (2.19.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
       lumberjack (>= 1.0.12, < 2.0)
@@ -46,10 +45,11 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   ceedling (= 0.31.1)
-  guard (= 2.18.1)
+  guard (= 2.19.0)
   guard-rake (= 1.0.0)
   rake (= 13.2.1)
 
