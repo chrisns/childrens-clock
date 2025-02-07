@@ -23,10 +23,10 @@ jobs:
           path: |
             .esphome
           key: ${{ runner.os }}-${{ hashFiles('src/*') }}-${{ hashFiles('childrensclock.yaml') }}
-      - uses: devcontainers/ci@b217ffc359068515fb678d1a53232968b8b95b28 # v0.3
+      - uses: devcontainers/ci@8bf61b26e9c3a98f69cb6ce2f88d24ff59b785c6 # v0.3
         with:
           runCmd: rake test
-      - uses: devcontainers/ci@b217ffc359068515fb678d1a53232968b8b95b28 # v0.3
+      - uses: devcontainers/ci@8bf61b26e9c3a98f69cb6ce2f88d24ff59b785c6 # v0.3
         with:
           runCmd: rake build
           env: |
