@@ -1,6 +1,6 @@
 {
 	"name": "Ruby",
-	"image": "mcr.microsoft.com/devcontainers/ruby:3.0@sha256:84ec41f29cabe46f80f235427e64ad675927eda08c50ce54429c6dd661ef9d23",
+	"image": "mcr.microsoft.com/devcontainers/ruby:3.4@sha256:f757e014be74204c1ed601c0e3b0e5593091dc3144ebfd17795c5dabfbf40a69",
 	"postCreateCommand": "bundle install && pip install -r requirements.txt",
 	"features": {
 	"ghcr.io/devcontainers/features/python:1": {},
