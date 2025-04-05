@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'ceedling', '0.31.1'
+gem 'ceedling', '1.0.1'
 gem 'rake', '13.2.1'
 gem 'guard', '2.19.0'
 gem 'guard-rake', '1.0.0'
