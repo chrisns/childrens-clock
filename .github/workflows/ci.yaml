@@ -46,7 +46,7 @@ jobs:
         with:
           fetch-depth: "0"
       - id: semver
-        uses: lukaszraczylo/semver-generator@3704fdfb2c7ca95f2d20e5a648ccf50c87a37846 # 1.15.111
+        uses: lukaszraczylo/semver-generator@41cdd6dcc4d061f152b5b0fe5c151b66b941df70 # 1.15.307
         with:
           config_file: .github/semver.yaml
           repository_local: true
