@@ -31,7 +31,7 @@ jobs:
           runCmd: rake build
           env: |
             VERSION=${{ needs.semver.outputs.semantic_version}}
-      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: firmware-factory.bin
           path: .esphome/build/childrensclock/.pioenvs/childrensclock/firmware.factory.bin
@@ -64,7 +64,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: firmware-factory.bin
       - uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0 # tag=v1.2.1
