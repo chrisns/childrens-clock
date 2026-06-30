@@ -6,7 +6,7 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/ladywhiskers/childrens-clock)
 ![AI generated comic style scene of a child in bed, reading, then getting up to fight crime](./docs/images/comic.png)
 
-> **This is a fork** of [chrisns/childrens-clock](https://github.com/chrisns/childrens-clock), updated for current ESPHome (2026.x): migrated from the deprecated `neopixelbus`/Arduino combination to `esp32_rmt_led_strip` on the `esp-idf` framework, fixed a timezone-comparison bug that prevented the configured POSIX timezone from ever being applied, and switched to `pool.ntp.org` for time sync. See the original repo for project history and prior art.
+> Updated for current ESPHome (2026.x): migrated from the deprecated `neopixelbus`/Arduino combination to `esp32_rmt_led_strip` on the `esp-idf` framework, and switched to `pool.ntp.org` for time sync. 
 
 ## Why
 This was a thing I made my kids after buying and becoming 🤯 frustrated with many different [commercial offerings](https://www.google.com/search?q=childrens+coloured+clock+wake+up&udm=3)/[[duckduckgo]](https://duckduckgo.com/?q=childrens+clock+wake+up&iar=shopping) that:
