@@ -54,14 +54,14 @@ You should end up with something (more tidy than this pic)
 #### Flash
 You'll now need to flash the board
 
-1. Connect the ESP32 board to your computer
-1. Download the [latest firmware image](https://github.com/ladywhiskers/childrens-clock/releases/latest/download/firmware-factory.bin)
-1. Go to [web.esphome.io](https://web.esphome.io/)
-1. Click connect, and select the serial port for your device
-1. Click install
-1. Follow the buttons to connect to the wifi, and away you go!
+1. Install [ESPHome](https://esphome.io/guides/installing_esphome) (or use the ESPHome dashboard add-on if you're running Home Assistant)
+1. Save the `src` folder from this repo alongside your ESPHome config directory, so the `includes: - src/childrensclock.h` reference in `childrensclock.yaml` resolves correctly
+1. Add `childrensclock.yaml` (or your own substitutions-based config, see [Running multiple clocks](#running-multiple-clocks) below) to your ESPHome dashboard
+1. Connect the ESP32 board to your computer via USB for the first flash
+1. Click install from the dashboard, select the USB/serial port for your device, and flash
+1. Follow the on-device prompts to connect to wifi (or use the fallback access point / Bluetooth provisioner described below), and away you go!
 
-> This fork builds on the `esp-idf` framework rather than `arduino`. Initial flashes (and any flash from scratch via the ESPHome dashboard rather than OTA) will take noticeably longer to compile than the previous Arduino-based builds — expect several minutes rather than under one.
+> This fork builds on the `esp-idf` framework rather than `arduino`. Initial flashes will take noticeably longer to compile than the previous Arduino-based builds — expect several minutes rather than under one. Once the device is on your network, future updates can be pushed over-the-air (OTA) from the dashboard without needing the USB cable again.
 
 #### Configure
 > When configuring the timezone, you'll need to refer to the [`POSIX` timezone config](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) just copy paste from this page into the config page of the device and you're good.
