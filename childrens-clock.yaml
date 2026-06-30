@@ -50,7 +50,7 @@ esp32:
     type: esp-idf
 
 dashboard_import:
-  package_import_url: github://chrisns/childrens-clock/childrensclock.yaml
+  package_import_url: github://ladywhiskers/childrens-clock/childrens-clock.yaml
   import_full_config: false
 
 color:
