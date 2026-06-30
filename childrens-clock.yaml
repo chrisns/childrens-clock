@@ -92,26 +92,16 @@ sensor:
     icon: mdi:percent
     update_interval: 5s
     lambda: |
-      float now = id(current_time_decimal).state;
-      int day_of_week = id(sntp_time).now().day_of_week;
-      float percent;
-      int currentstate = id(current_state).state;
-      // TODO: improve logic so progress is calculated right on friday and sunday nights
-
-      if (day_of_week == SAT || day_of_week == SUN) {
-        if (currentstate == AMBER) {
-          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute));
-        } else {
-          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute));
-        }
-      } else {
-        if (currentstate == AMBER) {
-          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute), TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute));
-        } else {
-          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute), TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute));
-        }
-      }
-      return percent;
+      return GetProgress(
+        id(sntp_time).now().day_of_week,
+        id(current_time_decimal).state,
+        TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
+        TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
+        TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
+        TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
+        TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
+        TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
+      );
 
   - name: Current time as decimal
     disabled_by_default: true

@@ -111,6 +111,37 @@ void testGetState(void) {
 
 }
 
+void testGetProgress(void) {
+  float weekday_go = 8;
+  float weekday_wake = 7;
+  float weekday_bedtime = 18;
+
+  float weekend_go = 9;
+  float weekend_wake = 8;
+  float weekend_bedtime = 19;
+
+  // Monday 3am (bedtime 18, wake 7 -> total 13h, 18 to 3 is 9h. 9/13 = ~69%)
+  TEST_ASSERT_FLOAT_WITHIN(1.0, 69.2, GetProgress(MON, 3, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Friday 6pm (GREEN, 100% since out of bounds for amber/red)
+  TEST_ASSERT_EQUAL_FLOAT(100.0, GetProgress(FRI, 18, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Saturday 7:30am (RED, bedtime 19, wake 8 -> total 13h, 19 to 7.5 is 12.5h. 12.5/13 = ~96%)
+  TEST_ASSERT_FLOAT_WITHIN(1.0, 96.1, GetProgress(SAT, 7.5, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Saturday 8:30am (AMBER, wake 8, go 9 -> total 1h, 8 to 8.5 is 0.5h. 0.5/1 = 50%)
+  TEST_ASSERT_EQUAL_FLOAT(50.0, GetProgress(SAT, 8.5, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Friday 3:00am (RED, yesterday Thursday, so startBedtime is weekday_bedtime 18. wake is weekday_wake 7. Total 13h. 18 to 3 is 9h. 9/13 = ~69%)
+  TEST_ASSERT_FLOAT_WITHIN(1.0, 69.2, GetProgress(FRI, 3.0, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Sunday 8:00pm (RED, evening. today Sunday, tomorrow Monday. so endWaketime is weekday_wake 7. bedtime is weekday_bedtime 18. Total 13h. 18 to 20 is 2h. 2/13 = ~15%)
+  TEST_ASSERT_FLOAT_WITHIN(1.0, 15.3, GetProgress(SUN, 20.0, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+
+  // Sunday 3:00am (RED, yesterday Saturday, so startBedtime is weekend_bedtime 19. wake is weekend_wake 8. Total 13h. 19 to 3 is 8h. 8/13 = ~61%)
+  TEST_ASSERT_FLOAT_WITHIN(1.0, 61.5, GetProgress(SUN, 3.0, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime));
+}
+
 
 // void testGetColor(void) {
   // TEST_ASSERT_EQUAL_STRING("GREEN", GetColor(50, 64));
