@@ -170,26 +170,6 @@ time:
               - light.turn_on:
                   id: led_matrix_light
                   brightness: 0.1
-        - lambda: |
-            auto current = id(sntp_time).get_timezone();
-            auto desired = id(tz).state;
-            if (id(sntp_time).now().is_valid() && current != desired) {
-              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current.c_str(), desired.c_str());
-              id(sntp_time).set_timezone(desired);
-              id(sntp_time).call_setup();
-            }
-    on_time:
-      - seconds: 5
-        then:
-          lambda: |
-            auto current = id(sntp_time).get_timezone();
-            auto desired = id(tz).state;
-            if (id(sntp_time).now().is_valid() && current != desired) {
-              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current.c_str(), desired.c_str());
-              id(sntp_time).set_timezone(desired);
-              id(sntp_time).call_setup();
-            }
-
 font:
   - id: tinyfont
     file: "lexis.ttf"
