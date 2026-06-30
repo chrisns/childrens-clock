@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdbool.h>
 
-
 float TimeAsDecimal(float hour, float minute) {
   return hour + (0.0166666666667 * minute);
 }
@@ -36,7 +35,6 @@ float CalculateProgress(float currentHour, float startHour, float endHour) {
 
   return progress * 100; // Return as percentage
 }
-
 
 int ProgressToDots(float progressPercent, int totalDots) {
   // Calculate the number of unlit dots using ceil for rounding up any fractional part
