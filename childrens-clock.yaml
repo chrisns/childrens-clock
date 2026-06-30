@@ -21,7 +21,6 @@ api:
   reboot_timeout: 0s
 
 web_server:
-  ota: true
   log: off
   version: 2
 
