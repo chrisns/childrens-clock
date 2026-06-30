@@ -65,11 +65,9 @@ const int FRI = 6;
 const int SAT = 7;
 
 int GetState(int dayOfWeek, float currentTime, float weekday_go, float weekday_wake, float weekday_bedtime, float weekend_go, float weekend_wake, float weekend_bedtime) {
-  // Determine current day type: weekday or weekend
-  int isWeekend = (dayOfWeek == SAT || dayOfWeek == SUN);
+  int isWeekend = !IsWeekday(dayOfWeek);
   int isWeekendNight = (dayOfWeek == FRI || dayOfWeek == SAT);
 
-  // Determine time thresholds based on the day type
   float goTime = isWeekend ? weekend_go : weekday_go;
   float wakeTime = isWeekend ? weekend_wake : weekday_wake;
   float bedtime = isWeekendNight ? weekend_bedtime : weekday_bedtime;
@@ -81,5 +79,41 @@ int GetState(int dayOfWeek, float currentTime, float weekday_go, float weekday_w
     return GREEN;  // Active period
   } else {
     return RED;    // Resting period
+  }
+}
+
+float GetProgress(int dayOfWeek, float currentTime, float weekday_go, float weekday_wake, float weekday_bedtime, float weekend_go, float weekend_wake, float weekend_bedtime) {
+  int currentstate = GetState(dayOfWeek, currentTime, weekday_go, weekday_wake, weekday_bedtime, weekend_go, weekend_wake, weekend_bedtime);
+
+  if (currentstate == AMBER) {
+    int isWeekend = !IsWeekday(dayOfWeek);
+    float wakeTime = isWeekend ? weekend_wake : weekday_wake;
+    float goTime = isWeekend ? weekend_go : weekday_go;
+    return CalculateProgress(currentTime, wakeTime, goTime);
+  } else {
+    // We are in the RED state. This can be before wake (morning) or after bed (evening).
+    int isWeekend = !IsWeekday(dayOfWeek);
+    float wakeTime = isWeekend ? weekend_wake : weekday_wake;
+    int isWeekendNight = (dayOfWeek == FRI || dayOfWeek == SAT);
+    float bedtime = isWeekendNight ? weekend_bedtime : weekday_bedtime;
+
+    float startBedtime;
+    float endWaketime;
+
+    if (currentTime < wakeTime) {
+      // It's morning. We woke up from yesterday's bedtime.
+      int yesterday = (dayOfWeek == SUN) ? SAT : (dayOfWeek - 1);
+      int isYesterdayWeekendNight = (yesterday == FRI || yesterday == SAT);
+      startBedtime = isYesterdayWeekendNight ? weekend_bedtime : weekday_bedtime;
+      endWaketime = wakeTime; // Today's wake time
+    } else {
+      // It's evening. We will wake up to tomorrow's wake time.
+      int tomorrow = (dayOfWeek == SAT) ? SUN : (dayOfWeek + 1);
+      int isTomorrowWeekend = !IsWeekday(tomorrow);
+      startBedtime = bedtime; // Today's bedtime
+      endWaketime = isTomorrowWeekend ? weekend_wake : weekday_wake;
+    }
+
+    return CalculateProgress(currentTime, startBedtime, endWaketime);
   }
 }
