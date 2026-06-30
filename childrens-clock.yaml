@@ -19,8 +19,6 @@ captive_portal:
 
 api:
   reboot_timeout: 0s
-  encryption:
-    key: !secret clock_api_key
 
 web_server:
   ota: true
@@ -69,7 +67,6 @@ ota:
     on_begin:
       then:
         - light.turn_off: led_matrix_light
-    password: !secret clock_ota_password
   - platform: web_server
 
 logger:
