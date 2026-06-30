@@ -10,7 +10,7 @@ wifi:
     ssid: "Clock Fallback Hotspot"
 
 esp32_improv:
-  authorizer: false
+  authorizer: none
 
 improv_serial:
   next_url: http://{{ip_address}}
@@ -33,7 +33,7 @@ esphome:
     - src/childrensclock.h
   project:
     name: chrisns.childrens-clock
-    version: $VERSION
+    version: "1.0.0"
   on_boot:
     priority: 700
     then:
