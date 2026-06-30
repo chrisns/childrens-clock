@@ -72,6 +72,12 @@ logger:
   level: DEBUG
   baud_rate: 460800
 
+globals:
+  - id: timezone_applied
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
 button:
   - platform: factory_reset
     disabled_by_default: true
@@ -170,6 +176,15 @@ time:
               - light.turn_on:
                   id: led_matrix_light
                   brightness: 0.1
+        - if:
+            condition:
+              - lambda: 'return !id(timezone_applied);'
+            then:
+              - lambda: |-
+                  id(sntp_time).set_timezone(id(tz).state);
+                  id(sntp_time).call_setup();
+                  id(timezone_applied) = true;
+
 font:
   - id: tinyfont
     file: "lexis.ttf"
@@ -242,6 +257,9 @@ text:
     optimistic: yes
     initial_value: "GMT0"
     restore_value: true
+    on_value:
+      then:
+        - lambda: 'id(timezone_applied) = false;'
 
 light:
   - platform: esp32_rmt_led_strip
