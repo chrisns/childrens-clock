@@ -55,8 +55,8 @@ You should end up with something (more tidy than this pic)
 You'll now need to flash the board
 
 1. Install [ESPHome](https://esphome.io/guides/installing_esphome) (or use the ESPHome dashboard add-on if you're running Home Assistant)
-1. Save the `src` folder from this repo alongside your ESPHome config directory, so the `includes: - src/childrensclock.h` reference in `childrensclock.yaml` resolves correctly
-1. Add `childrensclock.yaml` (or your own substitutions-based config, see [Running multiple clocks](#running-multiple-clocks) below) to your ESPHome dashboard
+1. Save the `src` folder from this repo alongside your ESPHome config directory, so the `includes: - src/childrensclock.h` reference in `childrens-clock.yaml` resolves correctly
+1. Add `childrens-clock.yaml` (or your own substitutions-based config, see [Running multiple clocks](#running-multiple-clocks) below) to your ESPHome dashboard
 1. Connect the ESP32 board to your computer via USB for the first flash
 1. Click install from the dashboard, select the USB/serial port for your device, and flash
 1. Follow the on-device prompts to connect to wifi (or use the fallback access point / Bluetooth provisioner described below), and away you go!
@@ -105,7 +105,7 @@ THANKS!
 If you flash the device and it fails to connect to your wifi for whatever reason, it'll run its own access point that you can connect to. It also provides a bluetooth provisioner that you can use. Just go to <https://www.improv-wifi.com/>
 
 #### Running multiple clocks
-If you're building more than one (e.g. one per kid), use the `substitutions` block at the top of `childrensclock.yaml` to set a unique `name`, `friendly_name`, and optionally `led_pin`/`num_leds` per device, rather than maintaining separate copies of the full config:
+If you're building more than one (e.g. one per kid), use the `substitutions` block at the top of `childrens-clock.yaml` to set a unique `name`, `friendly_name`, and optionally `led_pin`/`num_leds` per device, rather than maintaining separate copies of the full config:
 
 ```yaml
 substitutions:
@@ -114,7 +114,7 @@ substitutions:
   led_pin: GPIO16
 
 packages:
-  clock: github://ladywhiskers/childrens-clock/childrensclock.yaml
+  clock: github://ladywhiskers/childrens-clock/childrens-clock.yaml
 ```
 
 ---
