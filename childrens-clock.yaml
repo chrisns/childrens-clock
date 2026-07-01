@@ -160,8 +160,8 @@ sensor:
 
 time:
   - platform: sntp
+    timezone: ${timezone}
     id: sntp_time
-    timezone: GMT0
     servers:
       - 0.pool.ntp.org
       - 1.pool.ntp.org
@@ -253,7 +253,7 @@ text:
     id: tz
     mode: text
     optimistic: yes
-    initial_value: "GMT0"
+    initial_value: ${timezone}
     restore_value: true
     on_value:
       then:
