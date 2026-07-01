@@ -109,6 +109,7 @@ If you're building more than one (e.g. one per kid), use the `substitutions` blo
 
 ```yaml
 substitutions:
+  timezone: "AEST-10AEDT,M10.1.0,M4.1.0/3"
   name: harriet-clock
   friendly_name: Harriet's Clock
   led_pin: GPIO16
