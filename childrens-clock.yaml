@@ -37,6 +37,10 @@ esphome:
     priority: 700
     then:
       - light.turn_off: led_matrix_light
+      # SOFTWARE LEVEL SHIFTER: Pull up the data line to help cross the 5V matrix threshold
+      - lambda: |-
+          gpio_num_t pin = GPIO_NUM_16;
+          gpio_set_pull_mode(pin, GPIO_PULLUP_ONLY);
   on_shutdown:
     priority: 700
     then:
@@ -234,7 +238,6 @@ text_sensor:
   - platform: template
     name: Current time
     id: current_time
-    disabled_by_default: true
     lambda: |-
       return id(sntp_time).now().is_valid() ? id(sntp_time).now().strftime("%I:%M") : "";
     update_interval: 5s
