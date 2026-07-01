@@ -27,7 +27,7 @@ web_server:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  name_add_mac_suffix: true
+  name_add_mac_suffix: false
   includes:
     - src/childrensclock.h
   project:
@@ -37,7 +37,7 @@ esphome:
     priority: 700
     then:
       - light.turn_off: led_matrix_light
-      # SOFTWARE LEVEL SHIFTER: Pull up the data line to help cross the 5V matrix threshold
+      # HARDWARE COUPLING HACK: Activate pull-up to align logic streams
       - lambda: |-
           gpio_num_t pin = GPIO_NUM_16;
           gpio_set_pull_mode(pin, GPIO_PULLUP_ONLY);
@@ -51,10 +51,6 @@ esp32:
   variant: esp32
   framework:
     type: esp-idf
-
-dashboard_import:
-  package_import_url: github://ladywhiskers/childrens-clock/childrens-clock.yaml
-  import_full_config: false
 
 color:
   - id: RED_COLOR
@@ -102,16 +98,25 @@ sensor:
     icon: mdi:percent
     update_interval: 5s
     lambda: |
-      return GetProgress(
-        id(sntp_time).now().day_of_week,
-        id(current_time_decimal).state,
-        TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
-        TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
-        TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
-        TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
-        TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
-        TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
-      );
+      float now = id(current_time_decimal).state;
+      int day_of_week = id(sntp_time).now().day_of_week;
+      float percent;
+      int currentstate = id(current_state).state;
+
+      if (day_of_week == SAT || day_of_week == SUN) {
+        if (currentstate == AMBER) {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute));
+        } else {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute), TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute));
+        }
+      } else {
+        if (currentstate == AMBER) {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute), TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute));
+        } else {
+          percent = CalculateProgress(now, TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute), TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute));
+        }
+      }
+      return percent;
 
   - name: Current time as decimal
     disabled_by_default: true
@@ -175,7 +180,7 @@ time:
               - lambda: 'return !id(timezone_applied);'
             then:
               - lambda: |-
-                  id(sntp_time).set_timezone(id(tz).state);
+                  id(sntp_time).set_timezone(id(tz).state.c_str());
                   id(sntp_time).call_setup();
                   id(timezone_applied) = true;
 
@@ -281,7 +286,6 @@ display:
       return (x * 8) + (7 - y);
     lambda: |-
         auto color = Color(0, 0, 0);
-
         int currentstate = id(current_state).state;
 
         switch (currentstate) {
