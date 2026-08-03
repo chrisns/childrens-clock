@@ -40,6 +40,7 @@ You will need to buy:
 - 1x [ESP32](https://www.aliexpress.com/item/1005006692499859.html) £1.91 _(worth buying a few in case you mess up the soldering)_
 - 1x [WS2812B 8x32 LED Matrix](https://www.aliexpress.com/item/1005002399031444.html) £2.59
 - 1x [15x5" Photo frame](https://www.amazon.co.uk/dp/B0BBPJPFC9)
+- 1x 5V power supply rated for **at least 4-5A** — 256 WS2812 LEDs can draw well beyond what a typical 1-2A USB charger or phone brick supplies, even at modest brightness. Undersized supplies cause brownout resets rather than an obvious failure, which is a confusing thing to debug.
 
 You will need:
 
