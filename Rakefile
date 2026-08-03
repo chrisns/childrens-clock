@@ -1,6 +1,6 @@
 desc "Run all tests with Ceedling"
 task :test do
-  sh "bundle exec ceedling clobber test:all gcov:all utils:gcov"
+  sh "bundle exec ceedling clobber test:all gcov:all"
 end
 
 desc "Build/Compile with esphome"

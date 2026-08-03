@@ -4,7 +4,7 @@ wifi:
     ssid: "Clock Fallback Hotspot"
 
 esp32_improv:
-  authorizer: false
+  authorizer: none
 
 improv_serial:
   next_url: http://{{ip_address}}
@@ -15,14 +15,11 @@ api:
   reboot_timeout: 0s
 
 web_server:
-  ota: true
   log: off
   version: 2
 
 esphome:
   name: childrensclock
-  platform: ESP32
-  board: esp32dev
   name_add_mac_suffix: true
   includes:
     - src/childrensclock.h
@@ -37,6 +34,11 @@ esphome:
     priority: 700
     then:
       - light.turn_off: led_matrix_light
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
 
 dashboard_import:
   package_import_url: github://chrisns/childrens-clock/childrensclock.yaml
@@ -56,6 +58,7 @@ ota:
     on_begin:
       then:
         - light.turn_off: led_matrix_light
+  - platform: web_server
 
 logger:
   level: DEBUG
@@ -142,6 +145,12 @@ sensor:
         TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
       );
 
+globals:
+  - id: applied_tz
+    type: std::string
+    restore_value: false
+    initial_value: '""'
+
 time:
   - platform: sntp
     id: sntp_time
@@ -158,23 +167,23 @@ time:
             then:
               - light.turn_on: led_matrix_light
         - lambda: |
-            auto current = id(sntp_time).get_timezone().c_str();
-            auto desired = id(tz).state.c_str();
-            if (id(sntp_time).now().is_valid() && strcmp(current,desired) != 0) {
-              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current, desired);
+            auto desired = id(tz).state;
+            if (id(sntp_time).now().is_valid() && id(applied_tz) != desired) {
+              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", id(applied_tz).c_str(), desired.c_str());
               id(sntp_time).set_timezone(desired);
               id(sntp_time).call_setup();
+              id(applied_tz) = desired;
             }
     on_time:
       - seconds: 5
         then:
           lambda: |
-            auto current = id(sntp_time).get_timezone().c_str();
-            auto desired = id(tz).state.c_str();
-            if (id(sntp_time).now().is_valid() && strcmp(current,desired) != 0) {
-              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", current, desired);
+            auto desired = id(tz).state;
+            if (id(sntp_time).now().is_valid() && id(applied_tz) != desired) {
+              ESP_LOGI("TIME", "Timezone doesn't match desired current %s, desired %s", id(applied_tz).c_str(), desired.c_str());
               id(sntp_time).set_timezone(desired);
               id(sntp_time).call_setup();
+              id(applied_tz) = desired;
             }
 
 font:

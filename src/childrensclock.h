@@ -2,11 +2,11 @@
 #include <stdbool.h>
 
 
-float TimeAsDecimal(float hour, float minute) {
+static float TimeAsDecimal(float hour, float minute) {
   return hour + (0.0166666666667 * minute);
 }
 
-float CalculateProgress(float currentHour, float startHour, float endHour) {
+static float CalculateProgress(float currentHour, float startHour, float endHour) {
   float progress = 0.0;
   float totalHours;
 
@@ -38,14 +38,14 @@ float CalculateProgress(float currentHour, float startHour, float endHour) {
 }
 
 
-int ProgressToDots(float progressPercent, int totalDots) {
+static int ProgressToDots(float progressPercent, int totalDots) {
   // Calculate the number of unlit dots using ceil for rounding up any fractional part
   int unlitDots = (int) ceil((progressPercent / 100.0) * totalDots);
   // Calculate the number of lit dots by subtracting unlit dots from total
   return unlitDots < totalDots ? totalDots - unlitDots : 0;
 }
 
-bool IsWeekday(int dayOfWeek) {
+static bool IsWeekday(int dayOfWeek) {
   if (dayOfWeek == 1 || dayOfWeek == 7) {
     return false;
   }
@@ -54,19 +54,19 @@ bool IsWeekday(int dayOfWeek) {
   }
 }
 
-const int GREEN = 0;
-const int AMBER = 1;
-const int RED = 2;
+static const int GREEN = 0;
+static const int AMBER = 1;
+static const int RED = 2;
 
-const int SUN = 1;
-const int MON = 2;
-const int TUE = 3;
-const int WED = 4;
-const int THU = 5;
-const int FRI = 6;
-const int SAT = 7;
+static const int SUN = 1;
+static const int MON = 2;
+static const int TUE = 3;
+static const int WED = 4;
+static const int THU = 5;
+static const int FRI = 6;
+static const int SAT = 7;
 
-int GetState(int dayOfWeek, float currentTime, float weekday_go, float weekday_wake, float weekday_bedtime, float weekend_go, float weekend_wake, float weekend_bedtime) {
+static int GetState(int dayOfWeek, float currentTime, float weekday_go, float weekday_wake, float weekday_bedtime, float weekend_go, float weekend_wake, float weekend_bedtime) {
   // Determine current day type: weekday or weekend
   int isWeekend = (dayOfWeek == SAT || dayOfWeek == SUN);
   int isWeekendNight = (dayOfWeek == FRI || dayOfWeek == SAT);

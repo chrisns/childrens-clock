@@ -18,23 +18,29 @@ jobs:
       - semver
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
       - uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5
         with:
           path: |
             .esphome
+            ~/.esphome
+            ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('src/*') }}-${{ hashFiles('childrensclock.yaml') }}
-      - uses: devcontainers/ci@8bf61b26e9c3a98f69cb6ce2f88d24ff59b785c6 # v0.3
-        with:
-          runCmd: rake test
-      - uses: devcontainers/ci@8bf61b26e9c3a98f69cb6ce2f88d24ff59b785c6 # v0.3
-        with:
-          runCmd: rake build
-          env: |
-            VERSION=${{ needs.semver.outputs.semantic_version}}
+      - run: pip install -r requirements.txt
+      - run: bundle exec rake test
+      - run: bundle exec rake build
+        env:
+          VERSION: ${{ needs.semver.outputs.semantic_version }}
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: firmware-factory.bin
-          path: .esphome/build/childrensclock/.pioenvs/childrensclock/firmware.factory.bin
+          path: .esphome/build/childrensclock/build/firmware.factory.bin
 
   semver:
     name: Generate a semantic version number
