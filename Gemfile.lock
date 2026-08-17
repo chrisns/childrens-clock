@@ -36,7 +36,7 @@ GEM
     guard-rake (1.0.0)
       guard
       rake
-    io-console (0.9.1)
+    io-console (0.9.2)
     listen (3.10.0)
       logger
       rb-fsevent (~> 0.10, >= 0.10.3)
