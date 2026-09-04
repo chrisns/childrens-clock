@@ -6,6 +6,29 @@ static float TimeAsDecimal(float hour, float minute) {
   return hour + (0.0166666666667 * minute);
 }
 
+// Shift a decimal time later by `minutes`, wrapping past midnight so a bedtime
+// pushed beyond 00:00 stays a valid clock time (CalculateProgress and GetProgress
+// already cope with ranges that wrap).
+static float ShiftLater(float decimalTime, float minutes) {
+  float shifted = decimalTime + (minutes / 60.0);
+  while (shifted >= 24.0) {
+    shifted -= 24.0;
+  }
+  return shifted;
+}
+
+// One scheduled time, with the holiday offset applied if holiday mode is on.
+// The stored wake/go/bedtime values are NEVER rewritten - the offset is applied
+// here, at evaluation time - so turning holiday mode off puts the normal
+// schedule straight back with nothing to undo and no chance of drift.
+static float ScheduleTime(int hour, int minute, float offsetMinutes, bool holiday) {
+  float t = TimeAsDecimal(hour, minute);
+  if (!holiday || isnan(offsetMinutes)) {
+    return t;
+  }
+  return ShiftLater(t, offsetMinutes);
+}
+
 static float CalculateProgress(float currentHour, float startHour, float endHour) {
   float progress = 0.0;
   float totalHours;

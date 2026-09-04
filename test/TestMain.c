@@ -144,6 +144,62 @@ void testGetProgress(void) {
 }
 
 
+void testShiftLater(void) {
+  // plain shifts
+  TEST_ASSERT_EQUAL_FLOAT(19, (float)ShiftLater(TimeAsDecimal(18, 0), 60));
+  TEST_ASSERT_EQUAL_FLOAT(8.25, (float)ShiftLater(TimeAsDecimal(7, 30), 45));
+  TEST_ASSERT_EQUAL_FLOAT(18, (float)ShiftLater(TimeAsDecimal(18, 0), 0));
+
+  // wrapping past midnight stays a valid clock time
+  TEST_ASSERT_EQUAL_FLOAT(0.5, (float)ShiftLater(TimeAsDecimal(23, 30), 60));
+  TEST_ASSERT_EQUAL_FLOAT(2, (float)ShiftLater(TimeAsDecimal(23, 0), 180));
+  TEST_ASSERT_EQUAL_FLOAT(0, (float)ShiftLater(TimeAsDecimal(23, 0), 60));
+}
+
+void testScheduleTime(void) {
+  // holiday mode off: the stored time is returned untouched, offset ignored
+  TEST_ASSERT_EQUAL_FLOAT(18, (float)ScheduleTime(18, 0, 60, false));
+  TEST_ASSERT_EQUAL_FLOAT(7.5, (float)ScheduleTime(7, 30, 120, false));
+
+  // holiday mode on
+  TEST_ASSERT_EQUAL_FLOAT(19, (float)ScheduleTime(18, 0, 60, true));
+  TEST_ASSERT_EQUAL_FLOAT(18, (float)ScheduleTime(18, 0, 0, true));
+
+  // an unset/NaN offset must not poison the time
+  TEST_ASSERT_EQUAL_FLOAT(18, (float)ScheduleTime(18, 0, NAN, true));
+}
+
+void testHolidayModeChangesState(void) {
+  // normal schedule: wake 07:00, go 08:00, bed 18:00 (weekday and weekend alike)
+  float go = 8, wake = 7, bed = 18;
+
+  // with a 60 minute offset on every phase
+  float h_go = ScheduleTime(8, 0, 60, true);
+  float h_wake = ScheduleTime(7, 0, 60, true);
+  float h_bed = ScheduleTime(18, 0, 60, true);
+
+  // 07:30 on a Monday: normally time to get up, in holiday mode still a lie-in
+  TEST_ASSERT_EQUAL_INT(AMBER, GetState(MON, 7.5, go, wake, bed, go, wake, bed));
+  TEST_ASSERT_EQUAL_INT(RED, GetState(MON, 7.5, h_go, h_wake, h_bed, go, wake, bed));
+
+  // 08:30: holiday mode has caught up to the waking period
+  TEST_ASSERT_EQUAL_INT(GREEN, GetState(MON, 8.5, go, wake, bed, go, wake, bed));
+  TEST_ASSERT_EQUAL_INT(AMBER, GetState(MON, 8.5, h_go, h_wake, h_bed, go, wake, bed));
+
+  // 18:30: normally bedtime, in holiday mode still up
+  TEST_ASSERT_EQUAL_INT(RED, GetState(MON, 18.5, go, wake, bed, go, wake, bed));
+  TEST_ASSERT_EQUAL_INT(GREEN, GetState(MON, 18.5, h_go, h_wake, h_bed, go, wake, bed));
+
+  // offsets of zero must leave the state machine exactly as it was
+  TEST_ASSERT_EQUAL_INT(
+    GetState(MON, 7.5, go, wake, bed, go, wake, bed),
+    GetState(MON, 7.5,
+             ScheduleTime(8, 0, 0, true),
+             ScheduleTime(7, 0, 0, true),
+             ScheduleTime(18, 0, 0, true), go, wake, bed));
+}
+
+
 // void testGetColor(void) {
   // TEST_ASSERT_EQUAL_STRING("GREEN", GetColor(50, 64));
 

@@ -84,15 +84,18 @@ sensor:
     icon: mdi:percent
     update_interval: 5s
     lambda: |
+      // NB: the local must NOT be called `holiday` - that shadows the switch's
+      // own `holiday` pointer and ESPHome's id() macro then fails to compile.
+      bool is_holiday = id(holiday).state;
       return GetProgress(
         id(sntp_time).now().day_of_week,
         id(current_time_decimal).state,
-        TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
-        TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
-        TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
-        TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
-        TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
-        TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
+        ScheduleTime(id(weekday_go).hour, id(weekday_go).minute, id(holiday_go_offset).state, is_holiday),
+        ScheduleTime(id(weekday_wake).hour, id(weekday_wake).minute, id(holiday_wake_offset).state, is_holiday),
+        ScheduleTime(id(weekday_bedtime).hour, id(weekday_bedtime).minute, id(holiday_bedtime_offset).state, is_holiday),
+        ScheduleTime(id(weekend_go).hour, id(weekend_go).minute, id(holiday_go_offset).state, is_holiday),
+        ScheduleTime(id(weekend_wake).hour, id(weekend_wake).minute, id(holiday_wake_offset).state, is_holiday),
+        ScheduleTime(id(weekend_bedtime).hour, id(weekend_bedtime).minute, id(holiday_bedtime_offset).state, is_holiday)
       );
 
   - name: Current time as decimal
@@ -124,15 +127,18 @@ sensor:
     state_class: measurement
     update_interval: 5s
     lambda: |
+      // NB: the local must NOT be called `holiday` - that shadows the switch's
+      // own `holiday` pointer and ESPHome's id() macro then fails to compile.
+      bool is_holiday = id(holiday).state;
       return GetState(
         id(sntp_time).now().day_of_week,
         id(current_time_decimal).state,
-        TimeAsDecimal(id(weekday_go).hour, id(weekday_go).minute),
-        TimeAsDecimal(id(weekday_wake).hour, id(weekday_wake).minute),
-        TimeAsDecimal(id(weekday_bedtime).hour, id(weekday_bedtime).minute),
-        TimeAsDecimal(id(weekend_go).hour, id(weekend_go).minute),
-        TimeAsDecimal(id(weekend_wake).hour, id(weekend_wake).minute),
-        TimeAsDecimal(id(weekend_bedtime).hour, id(weekend_bedtime).minute)
+        ScheduleTime(id(weekday_go).hour, id(weekday_go).minute, id(holiday_go_offset).state, is_holiday),
+        ScheduleTime(id(weekday_wake).hour, id(weekday_wake).minute, id(holiday_wake_offset).state, is_holiday),
+        ScheduleTime(id(weekday_bedtime).hour, id(weekday_bedtime).minute, id(holiday_bedtime_offset).state, is_holiday),
+        ScheduleTime(id(weekend_go).hour, id(weekend_go).minute, id(holiday_go_offset).state, is_holiday),
+        ScheduleTime(id(weekend_wake).hour, id(weekend_wake).minute, id(holiday_wake_offset).state, is_holiday),
+        ScheduleTime(id(weekend_bedtime).hour, id(weekend_bedtime).minute, id(holiday_bedtime_offset).state, is_holiday)
       );
 
 globals:
@@ -181,6 +187,61 @@ font:
     file: "lexis.ttf"
     size: 8
     glyphs: :0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+switch:
+  # While this is on, the offsets below push wake/go/bedtime later - for school
+  # holidays, or any stretch where the normal routine is relaxed. Off by default,
+  # and turning it off restores the normal schedule exactly.
+  - platform: template
+    name: Holiday mode
+    id: holiday
+    icon: mdi:beach
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+
+number:
+  # Minutes LATER than the normal schedule, applied only while Holiday mode is on.
+  # Separate per phase so a lie-in can be longer than the later bedtime that
+  # earned it; set any of them to 0 to leave that phase alone. They apply to
+  # whichever schedule is in effect that day, weekday or weekend.
+  - platform: template
+    name: Holiday wake offset
+    id: holiday_wake_offset
+    icon: mdi:clock-plus-outline
+    unit_of_measurement: min
+    optimistic: true
+    initial_value: 60
+    restore_value: true
+    min_value: 0
+    max_value: 180
+    step: 5
+    mode: box
+
+  - platform: template
+    name: Holiday go offset
+    id: holiday_go_offset
+    icon: mdi:clock-plus-outline
+    unit_of_measurement: min
+    optimistic: true
+    initial_value: 60
+    restore_value: true
+    min_value: 0
+    max_value: 180
+    step: 5
+    mode: box
+
+  - platform: template
+    name: Holiday bedtime offset
+    id: holiday_bedtime_offset
+    icon: mdi:clock-plus-outline
+    unit_of_measurement: min
+    optimistic: true
+    initial_value: 60
+    restore_value: true
+    min_value: 0
+    max_value: 180
+    step: 5
+    mode: box
 
 datetime:
   - platform: template
