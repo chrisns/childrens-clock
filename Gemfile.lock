@@ -18,7 +18,7 @@ GEM
     ffi (1.17.4-x86_64-linux-gnu)
     formatador (1.2.3)
       reline
-    guard (2.20.2)
+    guard (2.21.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
       logger (~> 1.6)
@@ -68,7 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   ceedling (= 1.2.2)
-  guard (= 2.20.2)
+  guard (= 2.21.0)
   guard-rake (= 1.0.0)
   rake (= 13.4.2)
 
